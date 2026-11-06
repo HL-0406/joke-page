@@ -32,11 +32,27 @@
     </div>
 
     <script>
-        // 获取 IP
-        fetch('https://api.ipify.org?format=json')
-            .then(response => response.json())
-            .then(data => { document.getElementById('userIp').innerText = data.ip; })
-            .catch(() => { document.getElementById('userIp').innerText = "获取失败"; });
+        // 获取 IP（双重保险，国内接口）
+        function getIP() {
+            // 尝试第一个接口
+            fetch('https://whois.pconline.com.cn/ipJson.jsp?json=true')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('userIp').innerText = data.ip;
+                })
+                .catch(() => {
+                    // 如果第一个失败，尝试第二个接口
+                    fetch('http://ip-api.com/json/?lang=zh-CN')
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById('userIp').innerText = data.query;
+                        })
+                        .catch(() => {
+                            document.getElementById('userIp').innerText = "无法获取";
+                        });
+                });
+        }
+        getIP();
 
         // 黑客代码雨
         const canvas = document.getElementById('matrix');
